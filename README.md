@@ -19,7 +19,7 @@
 
 1. Clone hoặc tải xuống mã nguồn
    ```
-   git clone https://github.com/thekids1002/sale_managerment.git
+   git clone https://github.com/thekids1002/sales_managerment.git
    ```
    Hoặc giải nén file zip vào thư mục web server của bạn (htdocs nếu dùng XAMPP).
 
