@@ -1,0 +1,69 @@
+/**
+ * Custom CSS Styles
+ */
+
+/* Custom border left cards */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b;
+}
+
+/* Dashboard card styles */
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+/* 404 page style */
+.error {
+    position: relative;
+    color: #f8f9fc;
+    font-size: 7rem;
+    line-height: 1;
+    width: 12.5rem;
+    margin: 0 auto;
+}
+
+.error:after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    text-shadow: -1px 0 #e74a3b, 0 1px #e74a3b, 1px 0 #e74a3b, 0 -1px #e74a3b;
+}
+
+/* Custom button block */
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Custom footer styling */
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+} 
