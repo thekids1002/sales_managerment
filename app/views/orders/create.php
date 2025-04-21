@@ -130,7 +130,7 @@
                 </a>
                 <div>
                     <button type="button" class="btn btn-info" id="btn-print-preview">
-                        <i class="fas fa-print"></i> Print
+                        <i class="fas fa-print"></i> Print Preview
                     </button>
                     <button type="submit" class="btn btn-primary" id="btn-save-order">
                         <i class="fas fa-save"></i> Save
@@ -328,80 +328,32 @@
                 }
             });
             
-            // Generate preview HTML
-            const previewHTML = `
-                <div class="order-header text-center mb-4">
-                    <h3>INVOICE</h3>
-                    <div class="company-info">
-                        <h5>Sales Management System</h5>
-                        <p>123 ABC Street, XYZ City</p>
-                        <p>Email: contact@example.com | Phone: (123) 456-7890</p>
-                    </div>
-                </div>
+            // Fetch the invoice template
+            fetch('<?= baseUrl('/orders/template') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('input[name="csrf_token"]').value
+                },
+                body: JSON.stringify({
+                    order: formData,
+                    items: formData.items,
+                    isPreview: true
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Show in modal
+                document.getElementById('print-preview-content').innerHTML = html;
                 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h5>Customer:</h5>
-                        <p>
-                            <strong>${formData.customer_name}</strong><br>
-                            ${formData.customer_address ? formData.customer_address + '<br>' : ''}
-                            ${formData.customer_email ? 'Email: ' + formData.customer_email + '<br>' : ''}
-                            ${formData.customer_phone ? 'Phone: ' + formData.customer_phone : ''}
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Order Information:</h5>
-                        <p>
-                            <strong>Order ID:</strong> #${formData.id}<br>
-                            <strong>Created At:</strong> ${new Date().toLocaleDateString('en-US')}<br>
-                            ${formData.notes ? '<strong>Notes:</strong> ' + formData.notes : ''}
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Product</th>
-                                <th>Unit Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${formData.items.map((item, index) => `
-                                <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${item.product_name}</td>
-                                    <td>${item.unit_price.toLocaleString('en-US')} VND</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.subtotal.toLocaleString('en-US')} VND</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="4" class="text-end">Total:</th>
-                                <th>${formData.total_amount.toLocaleString('en-US')} VND</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                
-                <div class="footer text-center mt-4">
-                    <p>PREVIEW RECEIPT - NOT A VALID INVOICE</p>
-                    <p>Thank you for your purchase!</p>
-                </div>
-            `;
-            
-            // Show in modal
-            document.getElementById('print-preview-content').innerHTML = previewHTML;
-            
-            // Open modal using Bootstrap 5 modal
-            const modal = new bootstrap.Modal(document.getElementById('print-preview-modal'));
-            modal.show();
+                // Open modal using Bootstrap 5 modal
+                const modal = new bootstrap.Modal(document.getElementById('print-preview-modal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Error generating preview:', error);
+                alert('Failed to generate preview. Please try again.');
+            });
         }
         
         // Validate form

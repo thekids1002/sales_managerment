@@ -60,7 +60,7 @@ class OrderController
     }
 
     /**
-     * Show order details - checks both database and session
+     * Show order details
      */
     public function view($id)
     {
@@ -195,5 +195,37 @@ class OrderController
             flash('error', 'Unable to create order. Please try again');
             redirect('/orders/create');
         }
+    }
+
+    /**
+     * Render the invoice template for preview
+     */
+    public function renderTemplate()
+    {
+        // Get JSON input
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (!$data) {
+            header('HTTP/1.1 400 Bad Request');
+            echo 'Invalid data format';
+            exit;
+        }
+        
+        // Extract data
+        $order = isset($data['order']) ? $data['order'] : [];
+        $items = isset($data['items']) ? $data['items'] : [];
+        $isPreview = isset($data['isPreview']) ? (bool)$data['isPreview'] : false;
+        
+        // Start output buffer to capture template
+        ob_start();
+        
+        // Include the template
+        include VIEWS_PATH . '/components/invoice-template.php';
+        
+        // Return the rendered template
+        $html = ob_get_clean();
+        echo $html;
+        exit;
     }
 }
