@@ -26,7 +26,7 @@
 
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Tạo đơn hàng mới</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Create New Order</h6>
     </div>
     <div class="card-body">
         <form id="orderForm">
@@ -35,9 +35,9 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="customer_id" class="form-label">Khách hàng <span class="text-danger">*</span></label>
+                        <label for="customer_id" class="form-label">Customer <span class="text-danger">*</span></label>
                         <select class="form-select" id="customer_id" name="customer_id" required>
-                            <option value="">Chọn khách hàng</option>
+                            <option value="">Select Customer</option>
                             <?php foreach ($customers as $customer): ?>
                                 <option value="<?= e($customer['id']) ?>" data-name="<?= e($customer['name']) ?>" data-email="<?= e($customer['email']) ?>" data-phone="<?= e($customer['phone']) ?>" data-address="<?= e($customer['address']) ?>"><?= e($customer['name']) ?> (<?= e($customer['phone']) ?>)</option>
                             <?php endforeach; ?>
@@ -46,22 +46,22 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="notes" class="form-label">Ghi chú</label>
+                        <label for="notes" class="form-label">Notes</label>
                         <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
                     </div>
                 </div>
             </div>
             
-            <h5 class="mb-3">Sản phẩm</h5>
+            <h5 class="mb-3">Products</h5>
             
             <div class="table-responsive mb-3">
                 <table class="table table-bordered" id="orderItemsTable">
                     <thead>
                         <tr>
-                            <th width="40%">Sản phẩm</th>
-                            <th width="20%">Giá</th>
-                            <th width="20%">Số lượng</th>
-                            <th width="15%">Thành tiền</th>
+                            <th width="40%">Product</th>
+                            <th width="20%">Price</th>
+                            <th width="20%">Quantity</th>
+                            <th width="15%">Total</th>
                             <th width="5%"></th>
                         </tr>
                     </thead>
@@ -69,13 +69,13 @@
                         <tr class="order-item">
                             <td>
                                 <select class="form-select product-select" name="items[0][product_id]" required>
-                                    <option value="">Chọn sản phẩm</option>
+                                    <option value="">Select Product</option>
                                     <?php foreach ($products as $product): ?>
                                         <option value="<?= e($product['id']) ?>" 
                                                 data-name="<?= e($product['name']) ?>"
                                                 data-price="<?= e($product['price']) ?>"
                                                 data-max="<?= e($product['quantity']) ?>">
-                                            <?= e($product['name']) ?> (<?= e($product['quantity']) ?> sản phẩm có sẵn)
+                                            <?= e($product['name']) ?> (<?= e($product['quantity']) ?> products available)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -88,7 +88,7 @@
                             </td>
                             <td>
                                 <input type="number" class="form-control item-quantity" name="items[0][quantity]" min="1" value="1" required>
-                                <div class="invalid-feedback">Không đủ hàng trong kho!</div>
+                                <div class="invalid-feedback">Not enough stock available!</div>
                             </td>
                             <td>
                                 <div class="input-group">
@@ -107,12 +107,12 @@
                         <tr>
                             <td colspan="5">
                                 <button type="button" class="btn btn-success btn-sm" id="add-item">
-                                    <i class="fas fa-plus"></i> Thêm sản phẩm
+                                    <i class="fas fa-plus"></i> Add Product
                                 </button>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
                             <td colspan="2">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="order-total" readonly>
@@ -126,14 +126,14 @@
             
             <div class="d-flex justify-content-between">
                 <a href="<?= baseUrl('/orders') ?>" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Quay lại
+                    <i class="fas fa-arrow-left"></i> Go Back
                 </a>
                 <div>
                     <button type="button" class="btn btn-info" id="btn-print-preview">
-                        <i class="fas fa-print"></i> In
+                        <i class="fas fa-print"></i> Print
                     </button>
                     <button type="submit" class="btn btn-primary" id="btn-save-order">
-                        <i class="fas fa-save"></i> Lưu
+                        <i class="fas fa-save"></i> Save
                     </button>
                 </div>
             </div>
@@ -146,14 +146,14 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Xem trước đơn hàng</h5>
+                <h5 class="modal-title">Order Preview</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="print-preview-content">
                 <!-- Content will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -331,30 +331,30 @@
             // Generate preview HTML
             const previewHTML = `
                 <div class="order-header text-center mb-4">
-                    <h3>HÓA ĐƠN</h3>
+                    <h3>INVOICE</h3>
                     <div class="company-info">
-                        <h5>Hệ Thống Quản Lý Bán Hàng</h5>
-                        <p>123 Đường ABC, Thành phố XYZ</p>
-                        <p>Email: contact@example.com | Điện thoại: (123) 456-7890</p>
+                        <h5>Sales Management System</h5>
+                        <p>123 ABC Street, XYZ City</p>
+                        <p>Email: contact@example.com | Phone: (123) 456-7890</p>
                     </div>
                 </div>
                 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h5>Khách hàng:</h5>
+                        <h5>Customer:</h5>
                         <p>
                             <strong>${formData.customer_name}</strong><br>
                             ${formData.customer_address ? formData.customer_address + '<br>' : ''}
                             ${formData.customer_email ? 'Email: ' + formData.customer_email + '<br>' : ''}
-                            ${formData.customer_phone ? 'Điện thoại: ' + formData.customer_phone : ''}
+                            ${formData.customer_phone ? 'Phone: ' + formData.customer_phone : ''}
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <h5>Thông tin đơn hàng:</h5>
+                        <h5>Order Information:</h5>
                         <p>
-                            <strong>Mã đơn hàng:</strong> #${formData.id}<br>
-                            <strong>Ngày tạo:</strong> ${new Date().toLocaleDateString('vi-VN')}<br>
-                            ${formData.notes ? '<strong>Ghi chú:</strong> ' + formData.notes : ''}
+                            <strong>Order ID:</strong> #${formData.id}<br>
+                            <strong>Created At:</strong> ${new Date().toLocaleDateString('en-US')}<br>
+                            ${formData.notes ? '<strong>Notes:</strong> ' + formData.notes : ''}
                         </p>
                     </div>
                 </div>
@@ -363,11 +363,11 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>STT</th>
-                                <th>Sản phẩm</th>
-                                <th>Đơn giá</th>
-                                <th>Số lượng</th>
-                                <th>Thành tiền</th>
+                                <th>No.</th>
+                                <th>Product</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -375,24 +375,24 @@
                                 <tr>
                                     <td>${index + 1}</td>
                                     <td>${item.product_name}</td>
-                                    <td>${item.unit_price.toLocaleString('vi-VN')} VND</td>
+                                    <td>${item.unit_price.toLocaleString('en-US')} VND</td>
                                     <td>${item.quantity}</td>
-                                    <td>${item.subtotal.toLocaleString('vi-VN')} VND</td>
+                                    <td>${item.subtotal.toLocaleString('en-US')} VND</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="4" class="text-end">Tổng cộng:</th>
-                                <th>${formData.total_amount.toLocaleString('vi-VN')} VND</th>
+                                <th colspan="4" class="text-end">Total:</th>
+                                <th>${formData.total_amount.toLocaleString('en-US')} VND</th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
                 
                 <div class="footer text-center mt-4">
-                    <p>PHIẾU XEM TRƯỚC - KHÔNG PHẢI HÓA ĐƠN HỢP LỆ</p>
-                    <p>Cảm ơn quý khách đã mua hàng!</p>
+                    <p>PREVIEW RECEIPT - NOT A VALID INVOICE</p>
+                    <p>Thank you for your purchase!</p>
                 </div>
             `;
             
@@ -412,7 +412,7 @@
             // Check for customer
             if (!document.getElementById('customer_id').value) {
                 hasErrors = true;
-                errorMessage = 'Vui lòng chọn khách hàng.';
+                errorMessage = 'Please select a customer.';
                 return { hasErrors, errorMessage };
             }
             
@@ -433,14 +433,14 @@
                     if (quantity > max) {
                         hasErrors = true;
                         hasStockError = true;
-                        errorMessage = 'Một số sản phẩm có số lượng vượt quá tồn kho!';
+                        errorMessage = 'Some products have quantities exceeding stock!';
                     }
                 }
             });
             
             if (!hasItems && !hasErrors) {
                 hasErrors = true;
-                errorMessage = 'Vui lòng thêm ít nhất một sản phẩm vào đơn hàng.';
+                errorMessage = 'Please add at least one product to the order.';
             }
             
             return { hasErrors, errorMessage };
@@ -461,7 +461,7 @@
             newRow.innerHTML = `
                 <td>
                     <select class="form-select product-select" name="items[${itemCount}][product_id]" required>
-                        <option value="">Chọn sản phẩm</option>
+                        <option value="">Select Product</option>
                         ${productOptions}
                     </select>
                 </td>
@@ -473,7 +473,7 @@
                 </td>
                 <td>
                     <input type="number" class="form-control item-quantity" name="items[${itemCount}][quantity]" min="1" value="1" required>
-                    <div class="invalid-feedback">Không đủ hàng trong kho!</div>
+                    <div class="invalid-feedback">Not enough stock available!</div>
                 </td>
                 <td>
                     <div class="input-group">
