@@ -22,6 +22,10 @@ class OrderController
             $this->customerModel = $customerModel;
             $this->productModel = $productModel;
         }
+
+        if (!isLoggedIn()) {
+            redirect('/login');
+        }
     }
 
     /**
@@ -29,15 +33,8 @@ class OrderController
      */
     public function index()
     {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
-
-        $orders = $this->orderModel->getAll();
-        $drafts = isset($_SESSION['tempOrder']) ? $_SESSION['tempOrder'] : [];
         
-        // Merge orders and drafts
-        $orders = array_merge($orders, $drafts);
+        $orders = $this->orderModel->getAll();
 
         view('orders/index', [
             'title' => 'Orders',
@@ -50,9 +47,7 @@ class OrderController
      */
     public function create()
     {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
+        
 
         $customers = $this->customerModel->getAll();
         $products = $this->productModel->getAll();
@@ -69,29 +64,11 @@ class OrderController
      */
     public function view($id)
     {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
-
-        // Check if it's a draft order in session
-        if (isset($_SESSION['tempOrder']) && isset($_SESSION['tempOrder'][$id])) {
-            $order = $_SESSION['tempOrder'][$id];
-            $orderItems = $order['items'];
-            
-            view('orders/view', [
-                'title' => 'Draft Order Details',
-                'order' => $order,
-                'items' => $orderItems,
-                'isDraft' => true
-            ]);
-            return;
-        }
         
         // Check if it's a regular order in database
         $order = $this->orderModel->getById($id);
 
         if (!$order) {
-            // If not found in either place, redirect to 404
             view('errors/404', ['title' => 'Order Not Found']);
             return;
         }
@@ -101,31 +78,22 @@ class OrderController
         view('orders/view', [
             'title' => 'Order Details',
             'order' => $order,
-            'items' => $orderItems,
-            'isDraft' => false
+            'items' => $orderItems
         ]);
     }
 
     /**
-     * Print order - regular order from database
+     * Print order
      */
     public function printOrder($id)
     {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
-
-        $isDraft = false;
+        
 
         $order = $this->orderModel->getById($id);
 
         if (!$order) {
-            if (!isset($_SESSION['tempOrder']) || !isset($_SESSION['tempOrder'][$id])) {
-                view('errors/404', ['title' => 'Draft Order Not Found']);
-                return;
-            }
-            $order = $_SESSION['tempOrder'][$id];
-            $isDraft = true;
+            view('errors/404', ['title' => 'Order Not Found']);
+            return;
         }
 
         $orderItems = $this->orderModel->getOrderItems($id);
@@ -133,167 +101,49 @@ class OrderController
         view('orders/print', [
             'title' => 'Print Order',
             'order' => $order,
-            'items' => $orderItems,
-            'isDraft' => $isDraft
+            'items' => $orderItems
         ]);
     }
 
     /**
-     * Print draft order - draft from session
+     * Store a new order
      */
-    public function printDraft($id)
+    public function store()
     {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
-
-        if (!isset($_SESSION['tempOrder']) || !isset($_SESSION['tempOrder'][$id])) {
-            view('errors/404', ['title' => 'Draft Order Not Found']);
-            return;
-        }
-
-        $order = $_SESSION['tempOrder'][$id];
-        $items = $order['items'];
-
-        view('orders/print', [
-            'title' => 'Print Draft Order',
-            'order' => $order,
-            'items' => $items,
-            'isDraft' => true
-        ]);
-    }
-
-    public function saveTempOrder()
-    {
-        if (!isLoggedIn()) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Not logged in']);
-            exit;
-        }
-
-        // Get JSON input
-        $json = file_get_contents('php://input');
-        $data = json_decode($json, true);
         
-        if (!$data) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Invalid data format']);
-            exit;
-        }
-
-        // Get order data from JSON
-        $customerId = intval(isset($data['customer_id']) ? $data['customer_id'] : 0);
-        $notes = trim(isset($data['notes']) ? $data['notes'] : '');
-        $items = isset($data['items']) ? $data['items'] : [];
-
-        if ($customerId <= 0 || empty($items)) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Customer and at least one product are required']);
-            exit;
-        }
-
-        // Get customer information
-        $customer = $this->customerModel->getById($customerId);
-        if (!$customer) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Customer not found']);
-            exit;
-        }
-
-        // Prepare order items with product information
-        $orderItems = [];
-        $totalAmount = 0;
-
-        foreach ($items as $item) {
-            $productId = intval(isset($item['product_id']) ? $item['product_id'] : 0);
-            $quantity = intval(isset($item['quantity']) ? $item['quantity'] : 0);
-            $unitPrice = floatval(isset($item['unit_price']) ? $item['unit_price'] : 0);
-
-            if ($productId <= 0 || $quantity <= 0) {
-                continue;
-            }
-
-            $product = $this->productModel->getById($productId);
-            if (!$product) {
-                continue;
-            }
-
-            $subtotal = $unitPrice * $quantity;
-            $totalAmount += $subtotal;
-
-            $orderItems[] = [
-                'product_id' => $productId,
-                'product_name' => $product['name'],
-                'quantity' => $quantity,
-                'unit_price' => $unitPrice,
-                'subtotal' => $subtotal
-            ];
-        }
-
-        if (empty($orderItems)) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Please add at least one valid product to the order']);
-            exit;
-        }
-
-        $orderId = uniqid();
-        $orderData = [
-            'id' => $orderId,
-            'customer_id' => $customerId,
-            'customer_name' => $customer['name'],
-            'customer_email' => $customer['email'],
-            'customer_phone' => $customer['phone'],
-            'customer_address' => $customer['address'],
-            'notes' => $notes,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'total_amount' => $totalAmount,
-            'items' => $orderItems,
-        ];
-
-        // Store order data in session
-        if (!isset($_SESSION['tempOrder'])) {
-            $_SESSION['tempOrder'] = [];
-        }
-        $_SESSION['tempOrder'][$orderId] = $orderData;
-        
-        // Return success response
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'id' => $orderId]);
-        exit;
-    }
-
-    /**
-     * Save draft order to database
-     */
-    public function saveDraftToDatabase($id)
-    {
-        if (!isLoggedIn()) {
-            redirect('/login');
-        }
         
         // Check CSRF token
         if (!isset($_POST['csrf_token']) || !csrf_verify($_POST['csrf_token'])) {
             flash('error', 'Invalid request');
-            redirect('/orders');
+            redirect('/orders/create');
+            return;
         }
         
-        // Check if draft exists
-        if (!isset($_SESSION['tempOrder'][$id])) {
-            flash('error', 'Draft order not found');
-            redirect('/orders');
+        // Get form data
+        $customerId = isset($_POST['customer_id']) ? (int)$_POST['customer_id'] : 0;
+        $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
+        $items = isset($_POST['items']) ? $_POST['items'] : [];
+        
+        // Validate
+        if ($customerId <= 0) {
+            flash('error', 'Please select a customer');
+            redirect('/orders/create');
+            return;
         }
         
-        $draft = $_SESSION['tempOrder'][$id];
+        if (empty($items)) {
+            flash('error', 'Please add at least one product to the order');
+            redirect('/orders/create');
+            return;
+        }
         
         // Calculate total amount and validate items
         $totalAmount = 0;
         $orderItems = [];
         
-        foreach ($draft['items'] as $item) {
-            $productId = intval($item['product_id']);
-            $quantity = intval($item['quantity']);
-            $unitPrice = floatval($item['unit_price']);
+        foreach ($items as $item) {
+            $productId = isset($item['product_id']) ? (int)$item['product_id'] : 0;
+            $quantity = isset($item['quantity']) ? (int)$item['quantity'] : 0;
             
             if ($productId <= 0 || $quantity <= 0) {
                 continue;
@@ -304,12 +154,14 @@ class OrderController
                 continue;
             }
             
-            // Check if enough stock - use quantity field returned by getById
+            // Check if enough stock
             if ($product['quantity'] < $quantity) {
                 flash('error', "Not enough stock for product: {$product['name']}");
-                redirect("/orders/{$id}");
+                redirect('/orders/create');
+                return;
             }
             
+            $unitPrice = $product['price'];
             $itemTotal = $unitPrice * $quantity;
             $totalAmount += $itemTotal;
             
@@ -322,26 +174,26 @@ class OrderController
         
         if (empty($orderItems)) {
             flash('error', 'Please add at least one valid product to the order');
-            redirect("/orders/{$id}");
+            redirect('/orders/create');
+            return;
         }
         
+        // Create order in database
         $orderData = [
-            'customer_id' => $draft['customer_id'],
+            'customer_id' => $customerId,
             'total_amount' => $totalAmount,
-            'notes' => $draft['notes'],
+            'notes' => $notes,
             'items' => $orderItems
         ];
         
-        // Create real order
-        if ($orderId = $this->orderModel->create($orderData)) {
-            // Remove draft from session
-            unset($_SESSION['tempOrder'][$id]);
-            
-            flash('success', 'Draft order converted to real order successfully');
+        $orderId = $this->orderModel->create($orderData);
+        
+        if ($orderId) {
+            flash('success', 'Order created successfully');
             redirect("/orders/{$orderId}");
         } else {
-            flash('error', 'Failed to convert draft order');
-            redirect("/orders/{$id}");
+            flash('error', 'Unable to create order. Please try again');
+            redirect('/orders/create');
         }
     }
 }

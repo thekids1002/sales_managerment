@@ -17,7 +17,6 @@
                         <th>Customer</th>
                         <th>Total Amount</th>
                         <th>Notes</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,19 +31,13 @@
                     <?php else: ?>
                         <?php foreach ($orders as $order): ?>
                             <tr>
-                                <td><?= e($order['id']) ?></td>
+                                <td><a href="<?= baseUrl("/orders/{$order['id']}") ?>"><?= e($order['id']) ?></a></td>
                                 <td><?= formatDate($order['created_at'], 'Y-m-d H:i') ?></td>
                                 <td><?= e($order['customer_name']) ?></td>
                                 <td><?= formatPrice($order['total_amount']) ?></td>
 
 
                                 <td><?= e(isset($order['notes']) ? $order['notes'] : '') ?></td>
-                                <td>
-                                    <a href="<?= baseUrl("/orders/{$order['id']}") ?>" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

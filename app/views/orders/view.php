@@ -7,9 +7,6 @@
     <a href="<?= baseUrl("/orders/{$order['id']}/print") ?>" target="_blank" class="btn btn-info">
         <i class="fas fa-print"></i> Print Order
     </a>
-    <button type="button" class="btn btn-success <?= isset($isDraft) && $isDraft ? '' : 'disabled' ?>" data-bs-toggle="modal" data-bs-target="#saveToDatabaseModal">
-        <i class="fas fa-save"></i> Save to Database
-    </button>
 </div>
 
 <div class="row">
@@ -17,13 +14,8 @@
     <div class="col-md-6 mb-4">
         <div class="card shadow">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <?php if (isset($isDraft) && $isDraft): ?>
-                    <h6 class="m-0 font-weight-bold text-primary">Draft Order #<?= e($order['id']) ?></h6>
-                    <span class="text-muted"><?= formatDate($order['created_at'], 'Y-m-d H:i') ?></span>
-                <?php else: ?>
-                    <h6 class="m-0 font-weight-bold text-primary">Order #<?= e($order['id']) ?></h6>
-                    <span class="text-muted"><?= formatDate($order['order_date'], 'Y-m-d H:i') ?></span>
-                <?php endif; ?>
+                <h6 class="m-0 font-weight-bold text-primary">Order #<?= e($order['id']) ?></h6>
+                <span class="text-muted"><?= formatDate($order['order_date'], 'Y-m-d H:i') ?></span>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
@@ -57,13 +49,6 @@
                     <p><?= e($order['notes']) ?></p>
                 </div>
                 <?php endif; ?>
-
-                <?php if (isset($isDraft) && $isDraft): ?>
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Last Updated:</strong></p>
-                    <p><?= formatDate($order['updated_at'], 'Y-m-d H:i') ?></p>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -91,13 +76,7 @@
                                     <td><?= e($item['product_name']) ?></td>
                                     <td><?= formatPrice($item['unit_price']) ?></td>
                                     <td><?= e($item['quantity']) ?></td>
-                                    <td>
-                                        <?php if (isset($isDraft) && $isDraft): ?>
-                                            <?= formatPrice($item['subtotal']) ?>
-                                        <?php else: ?>
-                                            <?= formatPrice($item['unit_price'] * $item['quantity']) ?>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td><?= formatPrice($item['unit_price'] * $item['quantity']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -113,36 +92,6 @@
         </div>
     </div>
 </div>
-
-<?php if (isset($isDraft) && $isDraft): ?>
-<!-- Save to Database Modal -->
-<div class="modal fade" id="saveToDatabaseModal" tabindex="-1" aria-labelledby="saveToDatabaseModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="saveToDatabaseModalLabel">Save Draft to Database</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to save this draft to the database?</p>
-                <p>This will:</p>
-                <ul>
-                    <li>Create a new order in the system</li>
-                    <li>Reduce product inventory accordingly</li>
-                    <li>Remove this draft from the system</li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="<?= baseUrl("/orders/draft/{$order['id']}/save") ?>" method="post">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <button type="submit" class="btn btn-success">Save to Database</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
 
 <?php
 $content = ob_get_clean();
