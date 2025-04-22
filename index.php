@@ -96,6 +96,10 @@ $router->get('/orders/create', function() {
     $orderController->create();
 });
 
+$router->post('/orders/create', function() {
+    $orderController = new OrderController();
+    $orderController->store();
+});
 
 $router->get('/orders/{id}', function($id) {
     $orderController = new OrderController();
@@ -107,6 +111,11 @@ $router->get('/orders/{id}/print', function($id) {
     $orderController->printOrder($id);
 });
 
+// Template route for order preview
+$router->post('/orders/template', function() {
+    $orderController = new OrderController();
+    $orderController->renderTemplate();
+});
 
 // Customer purchase report
 $router->get('/reports/customer', function() {
@@ -123,22 +132,6 @@ $router->get('/reports/customer/{id}', function($id) {
 $router->get('/reports/sales', function() {
     $reportController = new ReportController();
     $reportController->salesReport();
-});
-
-// Order session management endpoints
-$router->post('/orders/save-temp', function() {
-    $orderController = new OrderController();
-    $orderController->saveTempOrder();
-});
-
-$router->get('/orders/draft/{id}/print', function($id) {
-    $orderController = new OrderController();
-    $orderController->printDraft($id);
-});
-
-$router->post('/orders/draft/{id}/save', function($id) {
-    $orderController = new OrderController();
-    $orderController->saveDraftToDatabase($id);
 });
 
 // 404 handler

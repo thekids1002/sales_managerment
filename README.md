@@ -4,9 +4,47 @@
 
 ## Tính Năng
 
-- **Quản lý sản phẩm**: Thêm, sửa, theo dõi tồn kho
-- **Xử lý đơn hàng**: Tạo và quản lý đơn hàng bán hàng
-- **Xác thực người dùng**: Đăng nhập an toàn
+### Quản lý sản phẩm
+- Xem danh sách sản phẩm với phân trang
+- Thêm sản phẩm mới với thông tin chi tiết
+- Chỉnh sửa thông tin sản phẩm
+- Theo dõi tồn kho sản phẩm
+- Lọc sản phẩm theo danh mục
+
+### Quản lý đơn hàng
+- Xem danh sách đơn hàng với phân trang
+- Tạo đơn hàng mới cho khách hàng
+- Thêm nhiều sản phẩm vào đơn hàng
+- Xem chi tiết đơn hàng
+- In hóa đơn đơn hàng
+
+### Quản lý khách hàng
+- Lưu trữ thông tin khách hàng
+- Xem lịch sử mua hàng của khách hàng
+
+### Báo cáo và thống kê
+- Báo cáo doanh số bán hàng
+- Thống kê theo ngày/tháng/năm
+- Báo cáo mua hàng của khách hàng
+- Lọc báo cáo theo khoảng thời gian
+
+### Hệ thống xác thực
+- Đăng nhập an toàn
+- Phân quyền người dùng
+- Đăng xuất
+
+### Tiện ích
+- Giao diện thân thiện, đáp ứng
+- Phân trang trong tất cả các danh sách
+- In hóa đơn/báo cáo
+- Tìm kiếm và lọc dữ liệu
+
+### Component
+- **Pagination**: Component phân trang có thể tái sử dụng, hỗ trợ điều hướng First/Previous/Next/Last
+  - Sử dụng: Đơn giản hóa việc hiển thị điều khiển phân trang trên các trang danh sách
+  - Ví dụ: `<?php include VIEWS_PATH . '/components/pagination.php'; ?>`
+- **Invoice Template**: Template hóa đơn có thể in
+  - Sử dụng: In hóa đơn đẹp, chuyên nghiệp cho đơn hàng
 
 ## Yêu Cầu Hệ Thống
 
@@ -49,7 +87,7 @@
    <?php
    return [
        // URL cơ sở của ứng dụng
-       'base_url' => 'http://localhost/sale_managerment', // Thay đổi theo cấu hình máy chủ web của bạn
+       'base_url' => 'http://localhost/sale_managerment', // Thay đổi theo cấu hình máy chủ web
        
        // Các cài đặt khác... (giữ nguyên)
    ];

@@ -24,10 +24,6 @@
                         <tr>
                             <td colspan="7" class="text-center">No orders found</td>
                         </tr>
-                    <?php endif; ?>
-
-                    <?php if (empty($orders) && empty($drafts)): ?>
-
                     <?php else: ?>
                         <?php foreach ($orders as $order): ?>
                             <tr>
@@ -35,30 +31,24 @@
                                 <td><?= formatDate($order['created_at'], 'Y-m-d H:i') ?></td>
                                 <td><?= e($order['customer_name']) ?></td>
                                 <td><?= formatPrice($order['total_amount']) ?></td>
-
-
                                 <td><?= e(isset($order['notes']) ? $order['notes'] : '') ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
+            
+            <!-- Pagination -->
+            <?php if (isset($pagination)): ?>
+                <?php 
+                $perPage = $pagination['per_page'];
+                $baseUrl = '/orders';
+                include VIEWS_PATH . '/components/pagination.php'; 
+                ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const table = document.getElementById('ordersTable');
-        if (table) {
-            new DataTable(table, {
-                order: [
-                    [1, 'desc']
-                ]
-            });
-        }
-    });
-</script>
 
 <?php
 $content = ob_get_clean();

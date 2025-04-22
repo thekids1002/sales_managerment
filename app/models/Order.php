@@ -27,6 +27,44 @@ class Order
     }
     
     /**
+     * Get paginated orders
+     * 
+     * @param int $page Current page number
+     * @param int $perPage Items per page
+     * @return array
+     */
+    public function getPaginated($page = 1, $perPage = 10) 
+    {
+        $offset = ($page - 1) * $perPage;
+        
+        // Get total records
+        $totalQuery = "SELECT COUNT(*) as total FROM orders";
+        $result = $this->db->fetch($totalQuery);
+        $total = isset($result['total']) ? $result['total'] : 0;
+        
+        // Calculate last page
+        $lastPage = ceil($total / $perPage);
+        
+        // Get data
+        $data = $this->db->fetchAll(
+            "SELECT o.*, c.name as customer_name
+             FROM orders o
+             LEFT JOIN customers c ON o.customer_id = c.id
+             ORDER BY o.order_date DESC
+             LIMIT ?, ?", 
+            [$offset, $perPage]
+        );
+        
+        return [
+            'data' => $data,
+            'total' => $total,
+            'per_page' => $perPage,
+            'current_page' => $page,
+            'last_page' => $lastPage
+        ];
+    }
+    
+    /**
      * Get order by ID
      * 
      * @param int $id Order ID

@@ -33,12 +33,20 @@ class OrderController
      */
     public function index()
     {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
         
-        $orders = $this->orderModel->getAll();
+        $orders = $this->orderModel->getPaginated($page, $perPage);
 
         view('orders/index', [
             'title' => 'Orders',
-            'orders' => $orders
+            'orders' => $orders['data'],
+            'pagination' => [
+                'total' => $orders['total'],
+                'per_page' => $orders['per_page'],
+                'current_page' => $orders['current_page'],
+                'last_page' => $orders['last_page']
+            ]
         ]);
     }
 

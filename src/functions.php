@@ -117,7 +117,6 @@ function flash($key, $message = null) {
  */
 function csrf_token() {
     if (!isset($_SESSION['csrf_token'])) {
-        // Use openssl_random_pseudo_bytes instead of random_bytes (PHP 7.0+)
         $_SESSION['csrf_token'] = bin2hex(openssl_random_pseudo_bytes(32));
     }
     

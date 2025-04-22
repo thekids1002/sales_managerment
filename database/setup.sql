@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS customers (
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10,2) NOT NULL DEFAULT 0,
     status ENUM('pending', 'processing', 'completed', 'cancelled') DEFAULT 'pending',
     notes TEXT,
