@@ -163,7 +163,7 @@
                     <h5>Order Information:</h5>
                     <p style="margin-bottom: 3px;">
                         <strong>Order ID:</strong> #<?= e($order['id']) ?><br>
-                        <strong>Creation Date:</strong> <?= formatDate($order['order_date'], 'Y-m-d H:i') ?><br>
+                        <strong>Creation Date:</strong> <?= formatDate($order['created_at'], 'Y-m-d H:i') ?><br>
                         <?php if (!empty($order['notes'])): ?>
                             <strong>Notes:</strong> <?= e($order['notes']) ?>
                         <?php endif; ?>

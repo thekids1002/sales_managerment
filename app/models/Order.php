@@ -22,7 +22,7 @@ class Order
             "SELECT o.*, c.name as customer_name
              FROM orders o
              LEFT JOIN customers c ON o.customer_id = c.id
-             ORDER BY o.order_date DESC"
+             ORDER BY o.created_at DESC"
         );
     }
     
@@ -50,7 +50,7 @@ class Order
             "SELECT o.*, c.name as customer_name
              FROM orders o
              LEFT JOIN customers c ON o.customer_id = c.id
-             ORDER BY o.order_date DESC
+             ORDER BY o.created_at DESC
              LIMIT ?, ?", 
             [$offset, $perPage]
         );
@@ -93,8 +93,8 @@ class Order
             $this->db->beginTransaction();
             
             // Insert order
-            $orderSql = "INSERT INTO orders (customer_id, order_date, total_amount, notes, created_at) 
-                    VALUES (?, NOW(), ?, ?, NOW())";
+            $orderSql = "INSERT INTO orders (customer_id, created_at, total_amount, notes) 
+                    VALUES (?, NOW(), ?, ?)";
                     
             $orderParams = [
                 $data['customer_id'], 
@@ -173,8 +173,8 @@ class Order
             "SELECT o.*, c.name as customer_name
              FROM orders o
              LEFT JOIN customers c ON o.customer_id = c.id
-             WHERE DATE(o.order_date) BETWEEN ? AND ?
-             ORDER BY o.order_date DESC", 
+             WHERE DATE(o.created_at) BETWEEN ? AND ?
+             ORDER BY o.created_at DESC", 
             [$startDate, $endDate]
         );
     }
@@ -195,12 +195,12 @@ class Order
         $params = [];
         
         if ($startDate && $endDate) {
-            $where = "WHERE DATE(o.order_date) BETWEEN ? AND ?";
+            $where = "WHERE DATE(o.created_at) BETWEEN ? AND ?";
             $params = [$startDate, $endDate];
         }
         
         $sql = "SELECT 
-                DATE_FORMAT(o.order_date, '{$dateFormat}') as date_group,
+                DATE_FORMAT(o.created_at, '{$dateFormat}') as date_group,
                 COUNT(o.id) as order_count,
                 SUM(o.total_amount) as total_sales
                 FROM orders o
@@ -226,8 +226,8 @@ class Order
             "SELECT o.*
              FROM orders o
              WHERE o.customer_id = ? 
-             AND DATE(o.order_date) BETWEEN ? AND ?
-             ORDER BY o.order_date DESC", 
+             AND DATE(o.created_at) BETWEEN ? AND ?
+             ORDER BY o.created_at DESC", 
             [$customerId, $startDate, $endDate]
         );
         

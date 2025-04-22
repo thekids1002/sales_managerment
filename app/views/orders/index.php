@@ -39,7 +39,7 @@
             </table>
             
             <!-- Pagination -->
-            <?php if (isset($pagination)): ?>
+            <?php if (isset($pagination) && count($orders) > 0): ?>
                 <?php 
                 $perPage = $pagination['per_page'];
                 $baseUrl = '/orders';

@@ -15,7 +15,7 @@
         <div class="card shadow">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Order #<?= e($order['id']) ?></h6>
-                <span class="text-muted"><?= formatDate($order['order_date'], 'Y-m-d H:i') ?></span>
+                <span class="text-muted"><?= formatDate($order['created_at'], 'Y-m-d H:i') ?></span>
             </div>
             <div class="card-body">
                 <div class="row mb-3">

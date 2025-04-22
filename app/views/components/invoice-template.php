@@ -38,8 +38,8 @@
         <h5>Order Information:</h5>
         <p>
             <strong>Order ID:</strong> #<?= e($order['id']) ?><br>
-            <?php if (isset($order['order_date'])): ?>
-                <strong>Creation Date:</strong> <?= formatDate($order['order_date'], 'Y-m-d H:i') ?><br>
+            <?php if (isset($order['created_at'])): ?>
+                <strong>Creation Date:</strong> <?= formatDate($order['created_at'], 'Y-m-d H:i') ?><br>
             <?php else: ?>
                 <strong>Created At:</strong> <?= isset($isPreview) && $isPreview ? date('Y-m-d H:i') : formatDate($order['created_at'], 'Y-m-d H:i') ?><br>
             <?php endif; ?>

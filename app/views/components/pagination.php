@@ -16,7 +16,7 @@ $endPage = min($pagination['last_page'], $pagination['current_page'] + 2);
         <!-- First Page -->
         <li class="page-item <?= ($pagination['current_page'] <= 1) ? 'disabled' : '' ?>">
             <a class="page-link" href="<?= baseUrl("{$baseUrl}?page=1{$queryString}") ?>" aria-label="First">
-                <span aria-hidden="true">&laquo;&laquo;</span>
+                <span aria-hidden="true">Frist</span>
             </a>
         </li>
         
@@ -44,7 +44,7 @@ $endPage = min($pagination['last_page'], $pagination['current_page'] + 2);
         <!-- Last Page -->
         <li class="page-item <?= ($pagination['current_page'] >= $pagination['last_page']) ? 'disabled' : '' ?>">
             <a class="page-link" href="<?= baseUrl("{$baseUrl}?page={$pagination['last_page']}{$queryString}") ?>" aria-label="Last">
-                <span aria-hidden="true">&raquo;&raquo;</span>
+                <span aria-hidden="true">Last</span>
             </a>
         </li>
     </ul>

@@ -71,13 +71,13 @@
                     <?php endif; ?>
                 </tbody>
             </table>
-            <!-- Sử dụng component phân trang với tham số -->
-            <?php
-            $queryParams = []; // Thêm các tham số truy vấn khác nếu cần
-            $baseUrl = '/products';
-            $perPage = 10;
-            include 'app/views/components/pagination.php';
-            ?>
+            <!-- Pagination -->
+            <?php if (isset($pagination) && count($products) > 0): ?>
+                <?php 
+                $baseUrl = '/products';
+                include VIEWS_PATH . '/components/pagination.php'; 
+                ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>

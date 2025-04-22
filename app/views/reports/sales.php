@@ -156,7 +156,7 @@
                         <?php foreach ($orders as $order): ?>
                             <tr>
                                 <td><?= e($order['id']) ?></td>
-                                <td><?= formatDate($order['order_date'], 'Y-m-d H:i') ?></td>
+                                <td><?= formatDate($order['created_at'], 'Y-m-d H:i') ?></td>
                                 <td><?= e($order['customer_name']) ?></td>
                                 <td><?= formatPrice($order['total_amount']) ?></td>
                                
