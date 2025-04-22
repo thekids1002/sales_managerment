@@ -55,11 +55,7 @@
                                 </td>
                                 <td><?= formatPrice($product['price']) ?></td>
                                 <td>
-                                    <?php if ($product['quantity'] < 10): ?>
-                                        <span class="text-danger"><?= e($product['quantity']) ?></span>
-                                    <?php else: ?>
-                                        <?= e($product['quantity']) ?>
-                                    <?php endif; ?>
+                                     <?= $product['quantity'] ?>
                                 </td>
                                 <td>
                                     <a href="<?= baseUrl("/products/{$product['id']}/edit") ?>" class="btn btn-info btn-sm">

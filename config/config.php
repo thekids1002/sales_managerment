@@ -4,7 +4,7 @@
  */
 return [
     // Base URL of the application
-    'base_url' => 'http://localhost/sale_managerment',
+    'base_url' => 'http://localhost/sales_managerment',
     
     // Application environment (development, testing, production)
     'environment' => 'development',
